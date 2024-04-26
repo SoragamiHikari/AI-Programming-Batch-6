@@ -4,12 +4,15 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    [SerializeField] Camera _camera;
+
     [SerializeField] float _speed;
     private Rigidbody _rigidbody;
 
     private void Awake()
     {
-       _rigidbody = GetComponent<Rigidbody>(); 
+       _rigidbody = GetComponent<Rigidbody>();
+        HideandLockCursor();
     }
 
     /* Start is called before the first frame update
@@ -25,7 +28,18 @@ public class Player : MonoBehaviour
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
-        Vector3 movementDirection = new Vector3(horizontal, 0, vertical);
+        Vector3 horizontalDirection = horizontal * _camera.transform.right;
+        Vector3 verticalaDirection = vertical * _camera.transform.forward;
+        horizontalDirection.y = 0;
+        verticalaDirection.y = 0;
+
+        Vector3 movementDirection = horizontalDirection + verticalaDirection;
         _rigidbody.velocity = movementDirection * _speed * Time.fixedDeltaTime;
+    }
+
+    void HideandLockCursor()
+    {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 }
