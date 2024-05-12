@@ -10,6 +10,7 @@ public class PatrolState : BaseState
     public void EnterState(Enemy enemyParameter)
     {
         _isMoving = false;
+        enemyParameter.animator.SetTrigger("PatrolState");
     }
     public void UpdateState(Enemy enemyParameter)
     {

@@ -1,24 +1,30 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
     [SerializeField] Camera _camera;
 
-    [SerializeField] float _speed;
-    [SerializeField] float _powerUpDuration;
+    [SerializeField] private float _speed;
+    [SerializeField] private float _powerUpDuration;
+    [SerializeField] private int _health;
+    [SerializeField] private TMP_Text _healthText;
+    [SerializeField] private Transform _respawnPoint;
     private Rigidbody _rigidbody;
     private Coroutine _powerUpCoroutine;
 
     public Action OnPowerUpStart;
     public Action OnPowerUpEnd;
+    private bool _isPowerUpActive = false;
 
     private void Awake()
     {
        _rigidbody = GetComponent<Rigidbody>();
         HideandLockCursor();
+        UpdateUI();
     }
 
     /* Start is called before the first frame update
@@ -61,6 +67,7 @@ public class Player : MonoBehaviour
 
     private IEnumerator StartPowerUp()
     {
+        _isPowerUpActive = true;
         if(OnPowerUpStart != null)
         {
             OnPowerUpStart();
@@ -68,9 +75,41 @@ public class Player : MonoBehaviour
         
         yield return new WaitForSeconds(_powerUpDuration);
 
+        _isPowerUpActive = false;
         if(OnPowerUpEnd != null)
         {
             OnPowerUpEnd();
         }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(_isPowerUpActive)
+        {
+            if(collision.gameObject.CompareTag("Enemy"))
+            {
+                collision.gameObject.GetComponent<Enemy>().Dead();
+            }
+        }
+    }
+
+    private void UpdateUI()
+    {
+        _healthText.text = "Health : " + _health;
+    }
+
+    public void Dead()
+    {
+        _health -= 1;
+        if(_health > 0)
+        {
+            transform.position = _respawnPoint.position;
+        }
+        else
+        {
+            _health = 0;
+            Debug.Log("Lose");
+        }
+        UpdateUI();
     }
 }
