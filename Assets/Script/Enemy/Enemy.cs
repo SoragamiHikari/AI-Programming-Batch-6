@@ -51,6 +51,9 @@ public class Enemy : MonoBehaviour
             player.OnPowerUpStart += StartRetreat;
             player.OnPowerUpEnd += StopRetreat;
         }
+        
+        int enemyStartPosition = RandomExcept(0, wayPoints.Count, 6);
+        transform.position = wayPoints[enemyStartPosition].position;
     }
 
     // Update is called once per frame
@@ -77,4 +80,12 @@ public class Enemy : MonoBehaviour
     {
         Destroy(gameObject);
     }
+
+    int RandomExcept(int min, int max, int except)
+    {
+        int result = UnityEngine.Random.Range(min, max - 1);
+        if (result >= except) result += 1;
+        return result;
+    }
+
 }
